@@ -1,4 +1,3 @@
-import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:svg_shape_cliping/image_manupulation.dart';
 
@@ -17,20 +16,9 @@ class _ImageClipperState extends State<ImageClipper> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    _imageManupulation = ImageManupulation(clipperImageAssetPath: 'assets/cw.png',bgImageAssetsPath: 'assets/xx.jpg');
+    _imageManupulation = ImageManupulation(clipperImageAssetPath: 'assets/cw.png',bgImageAssetsPath: 'assets/OIG.jpg');
     super.initState();
   }
-
-  img.Image _processImage(img.Image? image) {
-    //process the image
-    for (final img.Pixel pixel in image!) {
-      pixel.current.a = 255;
-    }
-    return image;
-  }
-
-  //late final ui.Image _uiImage;
 
   @override
   Widget build(BuildContext context) {

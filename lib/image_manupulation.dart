@@ -9,7 +9,7 @@ class ImageManupulation {
   final String clipperImageAssetPath;
   final double height = 200;
   final double width = 200;
-  ImageManupulation({required this.bgImageAssetsPath, required this.clipperImageAssetPath}) {}
+  ImageManupulation({required this.bgImageAssetsPath, required this.clipperImageAssetPath});
   late img.Image _bgImage;
   late img.Image _clipperImage;
 
@@ -29,27 +29,27 @@ class ImageManupulation {
     Uint8List clipperImagebytes;
     try {
       bgImagebytes = await _loadBytes(bgImageAssetsPath);
-      _bgImage = img.decodePng(bgImagebytes)!;
-      log("Create bg image");
+      _bgImage = img.decodeImage(bgImagebytes)!;
+      log("Create bg image",time: DateTime.now());
     } catch (e) {
-      log("error$e");
+      log("to create bg img $e",time: DateTime.now());
     }
     try {
       clipperImagebytes = await _loadBytes(clipperImageAssetPath);
       _clipperImage = img.decodePng(clipperImagebytes)!;
-      log("create clipper Image");
+      log("create clipper Image",time: DateTime.now());
     } catch (e) {
-      return Future.error('error$e');
+      return Future.error(' create clipper $e');
     }
     if (_bgImage.height != _clipperImage.height || _bgImage.width != _clipperImage.width) {
-      log('Reasizing bg image');
+      log('Reasizing bg image',time: DateTime.now());
       _bgImage = img.copyResize(_bgImage, height: _clipperImage.height, width: _clipperImage.width);
     }
     _clipperImage = _manupulateImage(_clipperImage);
   }
 
   img.Image _manupulateImage(img.Image image) {
-    log("manupulate start");
+    log("manupulate start",time: DateTime.now());
     for (final img.Pixel pixel in image) {
       double grayScaleValue = ((pixel.current.r + pixel.current.g + pixel.current.b) / 3) / 255;
       if (grayScaleValue > 0.4) {
@@ -57,21 +57,21 @@ class ImageManupulation {
         pixel.current.setRgba(bgPixel.r, bgPixel.g, bgPixel.b, bgPixel.a);
       }
     }
-    log("manupulate end");
+    log("manupulate end",time: DateTime.now());
 
     return image;
   }
 
   Future<Widget?> toUiImage() async {
     try {
-      log("image loading start");
+      log("image loading start",time: DateTime.now());
       await _loadImage();
-      log("image loading end");
+      log("image loading end",time: DateTime.now());
     } catch (e) {
-      log("error:$e");
+      log("error toUiImage:$e",time: DateTime.now());
       return Future.error(e);
     }
-
+    late ui.Image uiImage;
     try {
       ui.ImmutableBuffer buffer = await ui.ImmutableBuffer.fromUint8List(_clipperImage.getBytes());
       ui.ImageDescriptor id = ui.ImageDescriptor.raw(buffer,
@@ -81,13 +81,13 @@ class ImageManupulation {
       ui.Codec codec = await id.instantiateCodec(
           targetHeight: _clipperImage.height, targetWidth: _clipperImage.width);
       ui.FrameInfo fi = await codec.getNextFrame();
-      ui.Image uiImage = fi.image;
-      log("done");
-      return RawImage(
-        image: uiImage,
-      );
+      uiImage = fi.image;
+      log("done",time: DateTime.now());
     } catch (e) {
       Future.error(e);
     }
+    return RawImage(
+      image: uiImage,
+    );
   }
 }
