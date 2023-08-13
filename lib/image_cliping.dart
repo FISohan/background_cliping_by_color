@@ -18,7 +18,7 @@ class _ImageClipperState extends State<ImageClipper> {
   @override
   void initState() {
     // TODO: implement initState
-    _imageManupulation = ImageManupulation(clipperImageAssetPath: 'assets/cw.png',bgImageAssetsPath: 'assets/bg.png');
+    _imageManupulation = ImageManupulation(clipperImageAssetPath: 'assets/cw.png',bgImageAssetsPath: 'assets/xx.jpg');
     super.initState();
   }
 
@@ -37,7 +37,7 @@ class _ImageClipperState extends State<ImageClipper> {
     return Center(
       child: FutureBuilder(
         future: _imageManupulation.toUiImage(),
-        builder: (context, snapshot) => snapshot.data ?? const CircularProgressIndicator(),
+        builder: (context, snapshot) => snapshot.data ?? Text(snapshot.error.toString()),
       ),
     );
   }
