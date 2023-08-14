@@ -35,7 +35,7 @@ class _ClipedImageState extends State<ClipedImage> {
               if (result == null) return;
               try {
                 await _imageManupulation.loadCliperImage(
-                    "https://drive.google.com/file/d/1qC3byDh5L7Prwatz5uDU9MTuAR27hnYe/view?usp=drive_link");
+                    "https://cdn.pixabay.com/photo/2017/09/03/00/44/png-2709031_1280.png");
               } catch (e) {
                 log("ERROR:: $e");
               }

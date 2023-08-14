@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
 
 class ImageClipper {
-
   late img.Image _bgImage;
   late img.Image _clipperImage;
 
@@ -30,7 +29,7 @@ class ImageClipper {
       log("Failed to load bytes from network");
       return Future.error(e);
     }
-    
+
     return data;
   }
 
@@ -124,7 +123,8 @@ class ImageClipper {
     }
     return RawImage(
       image: uiImage,
+      height: 400,
+      width: 400,
     );
   }
-
 }
