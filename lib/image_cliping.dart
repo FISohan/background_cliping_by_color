@@ -16,7 +16,7 @@ class _ImageClipperState extends State<ImageClipper> {
 
   @override
   void initState() {
-    _imageManupulation = ImageManupulation(clipperImageAssetPath: 'assets/cw.png',bgImageAssetsPath: 'assets/OIG.jpg');
+    _imageManupulation = ImageManupulation(clipperImageAssetPath: 'assets/d.png',bgImageAssetsPath: 'assets/bg3.jpg');
     super.initState();
   }
 

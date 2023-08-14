@@ -30,26 +30,28 @@ class ImageManupulation {
     try {
       bgImagebytes = await _loadBytes(bgImageAssetsPath);
       _bgImage = img.decodeImage(bgImagebytes)!;
-      log("Create bg image",time: DateTime.now());
+      log("Create bg image", time: DateTime.now());
     } catch (e) {
-      log("to create bg img $e",time: DateTime.now());
+      log("to create bg img $e", time: DateTime.now());
     }
     try {
       clipperImagebytes = await _loadBytes(clipperImageAssetPath);
       _clipperImage = img.decodePng(clipperImagebytes)!;
-      log("create clipper Image",time: DateTime.now());
+      log("create clipper Image", time: DateTime.now());
     } catch (e) {
       return Future.error(' create clipper $e');
     }
     if (_bgImage.height != _clipperImage.height || _bgImage.width != _clipperImage.width) {
-      log('Reasizing bg image',time: DateTime.now());
+      log('Reasizing bg image', time: DateTime.now());
       _bgImage = img.copyResize(_bgImage, height: _clipperImage.height, width: _clipperImage.width);
     }
     _clipperImage = _manupulateImage(_clipperImage);
   }
 
   img.Image _manupulateImage(img.Image image) {
-    log("manupulate start",time: DateTime.now());
+    log("manupulate start", time: DateTime.now());
+        final Stopwatch t = Stopwatch()..start();
+
     for (final img.Pixel pixel in image) {
       double grayScaleValue = ((pixel.current.r + pixel.current.g + pixel.current.b) / 3) / 255;
       if (grayScaleValue > 0.4) {
@@ -57,20 +59,24 @@ class ImageManupulation {
         pixel.current.setRgba(bgPixel.r, bgPixel.g, bgPixel.b, bgPixel.a);
       }
     }
-    log("manupulate end",time: DateTime.now());
+    log("manupulate end", time: DateTime.now());
+        log("time:${t.elapsedMilliseconds.toString()}");
 
+        t.stop();
     return image;
   }
 
   Future<Widget?> toUiImage() async {
     try {
-      log("image loading start",time: DateTime.now());
+      log("image loading start", time: DateTime.now());
       await _loadImage();
-      log("image loading end",time: DateTime.now());
+      log("image loading end", time: DateTime.now());
     } catch (e) {
-      log("error toUiImage:$e",time: DateTime.now());
+      log("error toUiImage:$e", time: DateTime.now());
       return Future.error(e);
     }
+
+
     late ui.Image uiImage;
     try {
       ui.ImmutableBuffer buffer = await ui.ImmutableBuffer.fromUint8List(_clipperImage.getBytes());
@@ -82,7 +88,7 @@ class ImageManupulation {
           targetHeight: _clipperImage.height, targetWidth: _clipperImage.width);
       ui.FrameInfo fi = await codec.getNextFrame();
       uiImage = fi.image;
-      log("done",time: DateTime.now());
+      log("done", time: DateTime.now());
     } catch (e) {
       Future.error(e);
     }
