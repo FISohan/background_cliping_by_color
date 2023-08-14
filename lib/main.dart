@@ -12,11 +12,11 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return const MaterialApp(
+    return  const MaterialApp(
         home: Scaffold(
             backgroundColor: ui.Color.fromARGB(255, 206, 206, 206),
             body: Center(
-              child: ImageClipper(clipBackgroundImageAssetPath: "clipBackgroundImageAssetPath", clipperImageAssetPath: 'clipperImageAssetPath'),
+              child: ClipedImage(),
             )));
   }
 }
