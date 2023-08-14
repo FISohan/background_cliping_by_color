@@ -24,19 +24,39 @@ class ImageManupulation {
     return imageData.buffer.asUint8List();
   }
 
+  Future<img.Image> decodeImage(String path) async {
+  final data = await rootBundle.load(path);
+
+  // Utilize flutter's built-in decoder to decode asset images as it will be
+  // faster than the dart decoder.
+  final buffer = await ui.ImmutableBuffer.fromUint8List(
+      data.buffer.asUint8List());
+
+  final id = await ui.ImageDescriptor.encoded(buffer);
+  final codec = await id.instantiateCodec(
+      targetHeight: id.height,
+      targetWidth: id.width);
+
+  final fi = await codec.getNextFrame();
+
+  final uiImage = fi.image;
+  final uiBytes = await uiImage.toByteData();
+
+  final image = img.Image.fromBytes(width: id.width, height: id.height,
+      bytes: uiBytes!.buffer, numChannels: 4);
+
+  return image;
+}
+
   Future<void> _loadImage() async {
-    Uint8List bgImagebytes;
-    Uint8List clipperImagebytes;
     try {
-      bgImagebytes = await _loadBytes(bgImageAssetsPath);
-      _bgImage = img.decodeImage(bgImagebytes)!;
+      _bgImage = await decodeImage(bgImageAssetsPath);
       log("Create bg image", time: DateTime.now());
     } catch (e) {
       log("to create bg img $e", time: DateTime.now());
     }
     try {
-      clipperImagebytes = await _loadBytes(clipperImageAssetPath);
-      _clipperImage = img.decodePng(clipperImagebytes)!;
+      _clipperImage = await decodeImage(clipperImageAssetPath);
       log("create clipper Image", time: DateTime.now());
     } catch (e) {
       return Future.error(' create clipper $e');
