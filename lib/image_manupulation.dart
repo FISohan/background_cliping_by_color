@@ -45,8 +45,6 @@ class ImageClipper {
   }
 
   Future<img.Image> _loadImage(Uint8List data) async {
-    // Utilize flutter's built-in decoder to decode asset images as it will be
-    // faster than the dart decoder.
     final buffer = await ui.ImmutableBuffer.fromUint8List(data);
 
     final id = await ui.ImageDescriptor.encoded(buffer);
