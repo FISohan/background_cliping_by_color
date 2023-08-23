@@ -8,7 +8,8 @@ import 'dart:ui' as ui;
 class ImageClipper {
   late img.Image _bgImage;
   late img.Image _clipperImage;
-
+  late ui.Image uiImage;
+  late img.Image _copyOfClipperImage;
   // Future<Uint8List> _loadBytes(String assetPath) async {
   //   late ByteData imageData;
   //   try {
@@ -24,6 +25,7 @@ class ImageClipper {
     Uint8List? data;
     try {
       ByteData fileBytes = await NetworkAssetBundle(Uri.parse(baseUrl)).load('');
+      //uiImage = ui.Image()
       data = fileBytes.buffer.asUint8List();
     } catch (e) {
       log("Failed to load bytes from network");
@@ -66,19 +68,29 @@ class ImageClipper {
       log("Create bg image");
       Uint8List bytes = await _loadBytesFromFile(filePath);
       _bgImage = await _loadImage(bytes);
+      // var x = _clipperImage;
+      _clipperImage = _manupulateImage(_copyOfClipperImage, _bgImage);
     } catch (e) {
-      log("to create bg img $e", time: DateTime.now());
+      log("to create bg img $e");
     }
   }
 
+  void clearBg() {
+    _clipperImage = _copyOfClipperImage;
+    //loadCliperImage(baseUrl)
+  }
+
   Future<void> loadCliperImage(String baseUrl) async {
+    log("loading clipper..");
     try {
       Uint8List bytes = await _loadBytesFromNetwork(baseUrl);
       _clipperImage = await _loadImage(bytes);
-      log("create clipper Image", time: DateTime.now());
+      _copyOfClipperImage = _clipperImage.clone();
+      log('copied');
     } catch (e) {
       return Future.error(' create clipper $e');
     }
+    log("loaded clipper..");
   }
   // Future<void> _loadImage() async {
 
@@ -89,22 +101,22 @@ class ImageClipper {
   //   _clipperImage = _manupulateImage(_clipperImage);
   // }
 
-  img.Image _manupulateImage(img.Image image) {
+  img.Image _manupulateImage(img.Image mImage, img.Image bgImage) {
     log("manupulate start");
-
-    for (final img.Pixel pixel in image) {
+    img.Image mImageX = mImage.clone();
+    for (final img.Pixel pixel in mImageX) {
       double grayScaleValue = ((pixel.current.r + pixel.current.g + pixel.current.b) / 3) / 255;
       if (grayScaleValue > 0.4) {
-        img.Pixel bgPixel = _bgImage.getPixel(pixel.current.x, pixel.current.y);
+        img.Pixel bgPixel = bgImage.getPixel(pixel.current.x, pixel.current.y);
         pixel.current.setRgba(bgPixel.r, bgPixel.g, bgPixel.b, bgPixel.a);
       }
     }
-    return image;
+    return mImageX;
   }
 
   Future<Widget?> toUiImage() async {
-    _clipperImage = _manupulateImage(_clipperImage);
-    late ui.Image uiImage;
+    log('message');
+    // _manupulateImage(_copyOfClipperImage, bgImage)
     try {
       ui.ImmutableBuffer buffer = await ui.ImmutableBuffer.fromUint8List(_clipperImage.getBytes());
       ui.ImageDescriptor id = ui.ImageDescriptor.raw(buffer,
@@ -115,7 +127,6 @@ class ImageClipper {
           targetHeight: _clipperImage.height, targetWidth: _clipperImage.width);
       ui.FrameInfo fi = await codec.getNextFrame();
       uiImage = fi.image;
-      log("done", time: DateTime.now());
     } catch (e) {
       Future.error(e);
     }

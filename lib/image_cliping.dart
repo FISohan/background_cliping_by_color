@@ -31,18 +31,30 @@ class _ClipedImageState extends State<ClipedImage> {
         ),
         ElevatedButton(
             onPressed: () async {
-              FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: false);
-              if (result == null) return;
               try {
                 await _imageManupulation.loadCliperImage(
                     "https://cdn.pixabay.com/photo/2017/09/03/00/44/png-2709031_1280.png");
               } catch (e) {
                 log("ERROR:: $e");
               }
+              setState(() {});
+            },
+            child: const Text("Load clipper image")),
+        ElevatedButton(
+            onPressed: () async {
+              FilePickerResult? result = await FilePicker.platform.pickFiles(allowMultiple: false);
+              if (result == null) return;
               await _imageManupulation.loadBackgroundImage(result.files.first.path!);
               setState(() {});
             },
-            child: const Text("Load bg image"))
+            child: const Text("Load bg image")),
+        ElevatedButton(
+            onPressed: () {
+              setState(() {
+                _imageManupulation.clearBg();
+              });
+            },
+            child: const Text("clear bg image"))
       ],
     );
   }
