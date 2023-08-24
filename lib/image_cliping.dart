@@ -32,8 +32,8 @@ class _ClipedImageState extends State<ClipedImage> {
         ElevatedButton(
             onPressed: () async {
               try {
-                await _imageManupulation.loadCliperImage(
-                    "https://cdn.pixabay.com/photo/2017/09/03/00/44/png-2709031_1280.png");
+                await _imageManupulation.loadSvgCliperImage(
+                    "https://tmpfiles.org/dl/2094712/shape_fill_color.svg",context);
               } catch (e) {
                 log("ERROR:: $e");
               }
