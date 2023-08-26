@@ -9,7 +9,7 @@ import 'dart:ui' as ui;
 class ImageClipper {
   // img.Image? _bgImage;
   img.Image? _clipperImage;
-  late ui.Image uiImage;
+  ui.Image? uiImage;
   late img.Image _copyOfClipperImage;
   // Future<Uint8List> _loadBytes(String assetPath) async {
   //   late ByteData imageData;
@@ -69,6 +69,13 @@ class ImageClipper {
     final img = await pictureInfo.picture.toImage(500, 500);
     final ByteData? byteData = await img.toByteData(format: ui.ImageByteFormat.png);
     if (byteData == null) return Future.error("Failed to load svg image");
+    img.dispose();
+
+
+
+
+
+    
     return byteData.buffer.asUint8List();
   }
 
@@ -78,13 +85,15 @@ class ImageClipper {
       Uint8List bytes = await _loadBytesFromFile(filePath);
       img.Image bgImage = await _loadImage(bytes);
       _clipperImage = _manupulateImage(_copyOfClipperImage, bgImage);
+      await _toUiImage();
     } catch (e) {
       log("to create bg img $e");
     }
   }
 
-  void clearBg() {
+  Future<void> clearBg() async {
     _clipperImage = _copyOfClipperImage;
+    await _toUiImage();
   }
 
   Future<void> loadCliperImage(String baseUrl) async {
@@ -93,6 +102,7 @@ class ImageClipper {
       Uint8List bytes = await _loadBytesFromNetwork(baseUrl);
       _clipperImage = await _loadImage(bytes);
       _copyOfClipperImage = _clipperImage!.clone();
+      await _toUiImage();
       log('copied');
     } catch (e) {
       return Future.error('To create clipper $e');
@@ -106,6 +116,7 @@ class ImageClipper {
       _clipperImage = await _loadImage(uint8listOfSvg);
       _clipperImage = img.copyResize(_clipperImage!, width: 500, height: 500);
       _copyOfClipperImage = _clipperImage!.clone();
+      await _toUiImage();
     } catch (e) {
       log("Failed to load svg $e");
     }
@@ -127,16 +138,17 @@ class ImageClipper {
       //bool isCurrentPixelTransparent = pixel.current.a == 0;
       if (grayScaleValue > 0.1) {
         img.Pixel bgPixel = bgImage.getPixelSafe(pixel.current.x, pixel.current.y);
-       // if (bgPixel == Pixel.undefined) continue;
+        // if (bgPixel == Pixel.undefined) continue;
         pixel.current.setRgba(bgPixel.r, bgPixel.g, bgPixel.b, bgPixel.a);
       }
     }
     return mImageX;
   }
-void addSticker(){
-  img.
-}
-  Future<Widget?> toUiImage() async {
+
+// void addSticker(){
+//   img.
+// }
+  Future<ui.Image?> _toUiImage() async {
     if (_clipperImage == null) return Future.error("Add clipper image");
     try {
       ui.ImmutableBuffer buffer = await ui.ImmutableBuffer.fromUint8List(_clipperImage!.getBytes());
@@ -151,12 +163,10 @@ void addSticker(){
     } catch (e) {
       Future.error(e);
     }
-    return Container(
-      decoration: BoxDecoration(color: Colors.amber),
-      child: RawImage(
-        image: uiImage,
-        fit: BoxFit.fitWidth,
-      ),
-    );
+    return uiImage;
+  }
+
+  Widget mainImage() {
+    return RawImage(image: uiImage) ?? Text("Please Init");
   }
 }

@@ -25,15 +25,12 @@ class _ClipedImageState extends State<ClipedImage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        FutureBuilder(
-          future: _imageManupulation.toUiImage(),
-          builder: (context, snapshot) => snapshot.data ?? Text(snapshot.error.toString()),
-        ),
+        _imageManupulation.mainImage(),
         ElevatedButton(
             onPressed: () async {
               try {
-                await _imageManupulation.loadSvgCliperImage(
-                    "https://tmpfiles.org/dl/2094712/shape_fill_color.svg",context);
+                await _imageManupulation.loadCliperImage(
+                    "https://tmpfiles.org/dl/2116209/shape_design_path.png");
               } catch (e) {
                 log("ERROR:: $e");
               }
@@ -49,9 +46,9 @@ class _ClipedImageState extends State<ClipedImage> {
             },
             child: const Text("Load bg image")),
         ElevatedButton(
-            onPressed: () {
+            onPressed: () async{
+              await _imageManupulation.clearBg();
               setState(() {
-                _imageManupulation.clearBg();
               });
             },
             child: const Text("clear bg image"))
